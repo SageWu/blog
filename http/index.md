@@ -1,13 +1,18 @@
+# HTTP
+
 ## MIME
+
 Multipurpose Internet Mail Extensions。表示文件或字节流的类型和格式。常见的有`text/*，image/*，audio/*，video/*，application/*，multipart/*`。
 
 ## URI & URL & URN & PURL
+
 URI指统一资源标识符，用来标识互联网上的资源。\
 URL指统一资源定位器，是URI常见的表现形式，指明访问机制和资源的位置。包含`scheme, username, password, host, port, path, parameter, query, fragment`。\
 URN指统一资源命名，指明在特定命名空间中的名称。与资源存放的位置无关。示例：`urn:namespace identifier:namespace specific string`\
 PURL也是URL，但是指向中间解析服务器，访问时会返回资源真实的URL。该服务器提供了命名和解析服务。作为URN的过渡。
 
 ## 历史
+
 ### 0.9
 
 ### 1.0
@@ -15,17 +20,22 @@ PURL也是URL，但是指向中间解析服务器，访问时会返回资源真�
 ### 1.1
 
 ## 特点
+
 灵活可扩展；请求响应；无状态；可靠传输；
 
 ## 缺点
+
 无状态；明文传输；队头阻塞；
 
 ## 报文
+
 ### 请求报文
+
 > 起始行\
 > method(请求方法) URI(资源) version(http版本)
 
 #### method
+
 GET: 获取资源\
 HEAD: 获取资源元信息\
 POST: 提交数据进行处理\
@@ -37,17 +47,20 @@ TRACE: 跟踪客户端到服务器的传输路径\
 GET和POST区别点：1、语义；2、参数存放位置；3、参数编码；4、是否幂等；5、是否进行缓存；6、TCP报文数量；\
 URL编码：将非ASCII码字符和界定符转为十六进制字节值(%20指空格)
 
-#### 头部字段
+#### 请求报文头部字段
+
 * Accept: 数据格式，对应响应的Content-Type
 * Accept-Encoding: 压缩方式，对应响应的Content-Encoding
 * Accept-Language: 语言，对应响应的Content-Language
 * Accept-Charset: 字符集，对应响应的Content-Type
 
 ### 响应报文
+
 > 起始行\
 > version(http版本) status code(状态码) reason phrase(原因说明)
 
 #### status code
+
 1xx: 中间状态，需后续操作\
 100: continue; 101: switch protocol;
 
@@ -63,32 +76,77 @@ URL编码：将非ASCII码字符和界定符转为十六进制字节值(%20指�
 5xx: 服务端发生错误\
 500: internal server error; 501: not implemented; 502: bad gateway; 503: service unavailable;
 
-#### 头部字段
+#### 响应报文头部字段
+
 * Content-Length: 定长响应体需设置。如果小于正确值则进行截断，如果大于正常值则发生错误
 * Transfer-Encoding: 非定长响应体设置为chunked，基于长连接进行推送数据
 * Accept-Ranges: 表示接受分块获取资源，可用值为`bytes，none`
 * Content-Range: 客户端设置`Range: bytes=start-end[, start-end]`，服务器需进行校验并返回对应的数据，分单段数据和多段数据处理。格式为`Content-Range: bytes start-end/total`
 
 ## 连接管理
+
 ### 短连接
+
 发送请求并接收完响应后，关闭TCP连接。3次握手耗时，且存在慢启动。
 
 ### 长连接
+
 多个http请求响应复用同一个TCP连接。后一个http请求响应需等待前面的，存在队头阻塞问题。\
 队头阻塞解决方案：
+
 * 并发TCP连接
 * 域名分片
 
 ### 多路复用
+
 http2.0解决方案。
 
 ## Cookie
+
 `Cookie`和`Set-Cookie`头部字段。
+
 * 生命周期：expires，max-age
 * 作用域：domain, path。path为`/`匹配域名下任意路径
 * 安全：secure, httponly, samesite
 
 缺点
+
 * 空间有限，最多存储`4kb`
 * 每次请求都带上，存在性能问题，可通过指定domain和path
 * 安全问题，以纯文本形式传输
+
+## 缓存
+
+### 强缓存
+
+无需发送http请求
+
+* Expires: 过期时间，http/1.0。存在服务器和客户端时间不一致问题
+* Cache-Control: max-age, s-maxage, public, private, no-cache, must-revalidate, proxy-revalidate
+* max-stale, min-fresh, only-if-cached
+
+### 协商缓存
+
+* Last-Modified, If-Modified-Since
+* ETag, If-None-Match\
+精准度上，ETag更优；性能上，Last-Modified更优；服务器优先考虑ETag。
+
+### 缓存存放位置
+
+* Service Worker
+* Memory & Disk。各自有优缺点。比较大的文件会直接写入磁盘。内存使用率高的时候，优先写入磁盘。
+* Push Cache
+
+## 代理
+
+* 负载均衡：随机算法、轮询、一致性hash、LRU
+* 安全性：数据过滤、限流、心跳机制监听服务器状态
+* 缓存
+
+相关头部字段
+
+* Via: 记录中间代理服务器
+* X-Forwarded-For: 记录请求方ip地址。存在的问题：代理服务器需解析请求头并修改，存在一定性能问题；HTTPS中，原始报文不允许修改。可使用`代理协议`解决，PROXY + TCP4/TCP6 + 请求方地址 + 接收方地址 + 请求端口 + 接收端口。
+* X-Real-IP: 记录客户端ip地址
+* X-Forwarded-Host: 记录客户端域名
+* X-Forwarded-Proto: 记录客户端协议名称
