@@ -150,3 +150,45 @@ http2.0解决方案。
 * X-Real-IP: 记录客户端ip地址
 * X-Forwarded-Host: 记录客户端域名
 * X-Forwarded-Proto: 记录客户端协议名称
+
+## 跨域
+
+浏览器遵循同源策略（协议、主机、端口相同）。非同源站点有如下限制：不可读取和修改对方的DOM；不能访问对方的Cookie、IndexDB、LocalStorage；限制 XMLHttpRequest 请求。
+
+### CORS
+
+简单请求\
+请求方法为GET、HEAD、POST；头部字段包括Accept、Accept-Language、Content-Type（application/x-www-form-urlencoded、multipart/form-data、text/plain）、Content-Language。
+
+浏览器自动加上Origin, 服务器将允许的域名通过Access-Control-Allow-Origin返回，浏览器再根据该字段决定是否拦截响应
+
+非简单请求\
+先会发送预检请求
+
+```http
+OPTIONS URI HTTP/1.1
+Origin: 当前地址
+Host: 当前域名
+Access-Control-Request-Method: 跨域请求使用的方法
+Access-Control-Request-Headers: 跨域请求设置的头部字段
+```
+
+* Access-Control-Allow-Origin: 允许的域名
+* Access-Control-Allow-Methods: 允许的请求方法
+* Access-Control-Allow-Credentials: 允许发送Cookie
+* Access-Control-Allow-Headers: 允许设置的头部字段
+* Access-Control-Expose-Headers: 跨域请求返回的额外头部字段
+* Access-Control-Max-Age: 预检请求的有效期
+
+### JSONP
+
+利用`script`标签可以获取跨域资源实现。\
+兼容性好，但请求方法单一。
+
+### 反向代理
+
+利用反向代理服务器设置域名为站点域名，并将请求代理到真正的服务器。
+
+### 其他
+
+postMessage, WebSocket
