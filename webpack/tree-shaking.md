@@ -15,9 +15,9 @@
 
 ## 具体过程
 
-> 1、获取`entry`配置，生成`dependency`，解析配置的path，得到绝对路径。
-> 2、创建`module`。使用配置的`loader`对其内容进行处理，结果解析为AST，收集依赖。递归处理依赖，静态依赖存放在`dependencies`列表中，动态依赖则存放在`blocks`列表中。边的类型有`HarmonyImportSideEffectDependency`、`HarmonyImportSpecifierDependency`、`AsyncDependenciesBlock`。
-> 3、最终构建完成模块依赖图。
-> 4、确定每个模块依赖的`usedExports`，根据`HarmonyImportSpecifierDependency`。移除只存在`HarmonyImportSideEffectDependency`边的模块，只要导入模块是不会产生其他副作用的。
-> 5、构建`chunk`，动态依赖单独成`chunk`。构建`chunk`的内容。
-> `terser`对`chunk`的内容进行处理：删除未使用代码，压缩，混淆。`terser`也会生成AST对代码进行分析，删除为使用代码。
+> 1、获取`entry`配置，生成`dependency`，解析配置的path，得到绝对路径。\
+> 2、创建`module`。使用配置的`loader`对其内容进行处理，结果解析为AST，收集依赖。递归处理依赖，静态依赖存放在`dependencies`列表中，动态依赖则存放在`blocks`列表中。边的类型有`HarmonyImportSideEffectDependency`、`HarmonyImportSpecifierDependency`、`AsyncDependenciesBlock`。\
+> 3、最终构建完成模块依赖图。\
+> 4、确定每个模块依赖的`usedExports`，根据`HarmonyImportSpecifierDependency`。移除只存在`HarmonyImportSideEffectDependency`边的模块，只要导入模块是不会产生其他副作用的。\
+> 5、构建`chunk`，动态依赖单独成`chunk`。构建`chunk`的内容。\
+> 6、`terser`对`chunk`的内容进行处理：删除未使用代码，压缩，混淆。`terser`也会生成AST对代码进行分析，删除为使用代码。
