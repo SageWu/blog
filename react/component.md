@@ -187,7 +187,7 @@
 
 > `newChild`为单个元素。
 >> 遍历`current.child`。\
->> 如果`key`不等于新元素的`key`，则将其添加到父fiber节点的`deletions`中，并打上`ChildDeletion`标记。\
+>> 如果`key`不等于新元素的`key`，则将其添加到父fiber节点的`deletions`中，并将父fiber节点打上`ChildDeletion`标记。\
 >> 如果`key`相等，但是`type`不相等，则将其以及后续fiber节点删除。\
 >> 如果`key`相等，且`type`相等，则复用该fiber节点，其余的删除。\
 >> 如果没能复用，则直接创建新的fiber节点。
