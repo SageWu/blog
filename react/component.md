@@ -32,16 +32,45 @@
 
 ### Component.prototype.forceUpdate
 
-> 调用`updater.enqueueForceUpdate`，入队强制更新操作。
+> 调用`updater.enqueueForceUpdate`，入队强制更新操作。\
 > 后续流程和`setState`一致，唯一不同点是更新的`tag`为`ForceUpdate`。
+
+注意：该更新用于标记是否有强制更新，从而使跳过更新失效。
 
 `isMounted`和`replaceState`已经被废弃。
 
 问题：
-> 类中表达式的方法与`prototype`上设置的方法优先级？
+> 类中表达式的方法与`prototype`上设置的方法优先级？\
 > 类中表达式方法优先级更高，由于直接设置在实例对象上。另外声明式的方法，是设置在原型上的。
+>
+> 旧版React，优先级？\
+> ReactDom.flushSync > 同步批量更新 > 异步更新
 
-旧版React，优先级：ReactDom.flushSync > 同步批量更新 > 异步更新
+### 生命周期函数
+
+1、`componentWillReceiveProps`\
+触发条件：没有实现新的生命周期函数，`props`或者`context`发生变化。
+
+2、`getDerivedStateFromProps`\
+触发条件：前面处理完`updateQueue`后，跳过更新条件不成立，条件为`props`, `context`和`state`没发生变化以及没有强制更新。
+
+3、`shouldComponentUpdate`\
+如果没有强制更新，则检查是否需要更新。如果有实现该函数则执行，如果是`PureComponent`的话，则浅比较`props`和`state`。
+
+如果需要更新
+
+4、`componentWillUpdate`\
+触发条件：需要更新，并且没有实现新的生命周期函数。
+
+5、`getSnapshotBeforeUpdate`\
+触发条件：需要更新。
+
+6、`componentDidUpdate`\
+触发条件：需要更新。
+
+否则
+
+如果有更新已经合并到`current`上，则需触发`gSBU`和`cDU`。
 
 ## 函数组件
 
