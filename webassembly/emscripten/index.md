@@ -1,5 +1,9 @@
 # emscripten
 
+## 介绍
+
+另外提供了SDL、OpenGL的浏览器支持。
+
 ## 安装
 
 ```bash
@@ -21,6 +25,8 @@ emcc --bind -o a.html a.cpp
 ```
 
 > -g：保留调试信息\
+> -gseparate-dwarf=[filename]：将dwarf调试信息输出到独立文件\
+> -s SEPARATE_DWARF_URL=[url]：自定义调试信息文件地址\
 > -O：编译优化\
 > --cpuprofiler：页面嵌入cpu分析器\
 > --memoryprofiler：页面嵌入内存分配跟踪器\
@@ -33,6 +39,11 @@ cmake方式
 emcmake cmake ../
 make
 ```
+
+## 调试
+
+获取编译时调试信息，设置 `EMCC_DEBUG`。\
+其他帮助调试参数：`ASSERTIONS`, `SAFE_HEAP`, `DEMANGLE_SUPPORT`, `EMCC_AUTODEBUG`。
 
 ## 交互
 
