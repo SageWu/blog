@@ -16,3 +16,12 @@
 >> x为name和subpath的组合，并且该node_modules目录存在name/package.json。根据exports字段以及subpath决定文件路径。\
 >> 在该node_modules目录下，按文件方式解析。\
 >> 在该node_modules目录下，按照目录方式解析。
+
+条件性导出\
+在package.json的exports字段中配置
+
+* node：匹配nodejs环境
+* node-addons：匹配nodejs环境，更明确表明该入口依赖c++ addon
+* import：通过import或import()导入模块
+* require：通过require导入模块
+* default：作为fallback
