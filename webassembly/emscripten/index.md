@@ -21,23 +21,14 @@ source ./emsdk_env.sh
 常规方式
 
 ```bash
-emcc --bind -o a.html a.cpp
+emcc/em++ --bind -o a.html a.cpp
 ```
-
-> -g：保留调试信息\
-> -gseparate-dwarf=[filename]：将dwarf调试信息输出到独立文件\
-> -s SEPARATE_DWARF_URL=[url]：自定义调试信息文件地址\
-> -O：编译优化\
-> --cpuprofiler：页面嵌入cpu分析器\
-> --memoryprofiler：页面嵌入内存分配跟踪器\
-> --threadprofiler：页面嵌入线程活动分析器\
-> --js-library：链接除核心库以外的js库
 
 cmake方式
 
 ```bash
-emcmake cmake ../
-make
+emcmake cmake
+emmake make
 ```
 
 ## 调试
