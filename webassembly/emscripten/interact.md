@@ -2,6 +2,18 @@
 
 ## C++
 
+### 直接暴露
+
+`EMSCRIPTEN_KEEPALIVE`\
+导出函数，和将函数添加到`EXPORTED_FUNCTIONS`参数一样，防止LLVM dead-code-eliminate该函数。\
+之后通过`Module._[function name]`访问。
+
+```cpp
+int EMSCRIPTEN_KEEPALIVE add(int a, int b) {
+  return a + b;
+}
+```
+
 ### 直接调用
 
 `cwrap`对一个C++函数进行包裹，使得可以直接在JS中调用。值的类型有null、number、string、array。
@@ -19,7 +31,8 @@ let res = Module.ccall("add", "number", ["number", "number"], [1, 2]);
 
 ### 内联JS
 
-`emscripten_run_script`通过`eval`执行JS代码。
+`emscripten_run_script`通过`eval`执行JS代码。\
+`emscripten_sync_run_in_main_runtime_thread`可指定在主线程上执行。
 
 `EM_JS`
 
@@ -27,6 +40,41 @@ let res = Module.ccall("add", "number", ["number", "number"], [1, 2]);
 EM_JS(void, name, (), {
   //...
 });
+
+// 字符串
+EM_JS(void, say_hello, (const char* str), {
+  console.log('hello ' + UTF8ToString(str));
+}
+
+// 返回字符串
+EM_JS(char*, get_unicode_str, (), {
+  var jsString = 'Hello with some exotic Unicode characters: Tässä on yksi lumiukko: ☃, ole hyvä.';
+  // 'jsString.length' would return the length of the string as UTF-16
+  // units, but Emscripten C strings operate as UTF-8.
+  var lengthBytes = lengthBytesUTF8(jsString)+1;
+  var stringOnWasmHeap = _malloc(lengthBytes);
+  stringToUTF8(jsString, stringOnWasmHeap, lengthBytes);
+  return stringOnWasmHeap;
+});
+
+int main() {
+  char* str = get_unicode_str();
+  printf("UTF8 string says: %s\n", str);
+  // Each call to _malloc() must be paired with free(), or heap memory will leak!
+  free(str);
+  return 0;
+}
+
+// 指针
+EM_JS(void, read_data, (int* data), {
+  console.log('Data: ' + HEAP32[data>>2] + ', ' + HEAP32[(data+4)>>2]);
+});
+
+int main() {
+  int arr[2] = { 30, 45 };
+  read_data(arr);
+  return 0;
+}
 ```
 
 `EM_ASM`
