@@ -122,3 +122,34 @@ EMSCRIPTEN_BINDINGS(my_value_example) {
 ```js
 let person = Module.findPersonAtLocation([1, 2]);
 ```
+
+## 枚举
+
+```cpp
+enum OldStyle {
+  OLD_STYLE_ONE,
+  OLD_STYLE_TWO
+};
+
+enum class NewStyle {
+  ONE,
+  TWO
+};
+
+EMSCRIPTEN_BINDINGS(my_enum_example) {
+  enum_<OldStyle>("OldStyle")
+    .value("ONE", OLD_STYLE_ONE)
+    .value("TWO", OLD_STYLE_TWO);
+  enum_<NewStyle>("NewStyle")
+    .value("ONE", NewStyle::ONE)
+    .value("TWO", NewStyle::TWO);
+}
+```
+
+## 常量
+
+```cpp
+EMSCRIPTEN_BINDINGS(my_constant_example) {
+  constant("SOME_CONSTANT", SOME_CONSTANT);
+}
+```
