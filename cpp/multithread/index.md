@@ -63,19 +63,19 @@ lock_guard\
 
 ```cpp
 {
-  std::mutex m,
+  std::mutex m;
   std::lock_guard<std::mutex> lockGuard(m);
   doSomething();
 }
 ```
 
 unique_lock\
-死锁产生的原因是多个互斥量以不同的顺序被上锁；关键区域中需要锁。
+不同上锁策略（defer_lock, try_to_lock, adopt_lock）；转移锁的所有权；时间约束上锁；递归上锁。
 
 ```cpp
-std::unique_lock<std::mutex> guard1(a.mut, std::defer_lock);
-std::unique_lock<std::mutex> guard2(b.mut, std::defer_lock);
-std::lock(guard1, guard2);
+std::mutex m;
+std::unique_lock<std::mutex> guard(m, std::defer_lock);
+guard.lock();
 ```
 
 shared_lock\
@@ -85,4 +85,41 @@ shared_lock\
 std::shared_lock<std::shared_timed_mutex> readerLock(m);
 
 std::lock_guard<std::shared_timed_mutex> writerLock(m);
+```
+
+condition_variable\
+提供同步机制，解决经典生产者与消费者问题。
+
+```cpp
+std::mutex m;
+std::condition_variable cv;
+{
+  std::lock_guard<std::mutex> guard(m);
+  ...
+  cv.notify_one();
+}
+
+{
+  std::unique_lock<std::mutex> ul(m);
+  cv.wait(ul, [] {
+    return xx ? true: false;
+  });
+  ...
+}
+```
+
+死锁
+
+* 多个互斥量以不同的顺序被上锁
+* 关键区域中需要锁
+
+```cpp
+// std::lock 同时上锁多个lockable，避免死锁
+{
+  std::lock(m1, m2);
+}
+
+{
+  std::lock(m2, m1);
+}
 ```
