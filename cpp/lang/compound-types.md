@@ -51,3 +51,30 @@ cin.get(array, 10);
 std::cout << R"(hello world)";
 std::cout << R"+*(hello world)+*";
 ```
+
+## Structure
+
+```cpp
+struct Player {
+  int a;  // member
+};
+
+struct Player p1; // c style
+Player p1;
+
+// memberwise assignment
+Player p2 = p1;
+```
+
+位成员，指定成员使用的位数
+
+```cpp
+struct Register {
+  unsigned int a: 4;
+  unsigned int : 4;
+  bool c: 1;
+  bool d: 1;
+}
+
+Register reg = { 4, true, false };
+```
